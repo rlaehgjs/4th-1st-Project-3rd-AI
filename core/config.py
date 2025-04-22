@@ -1,7 +1,7 @@
 import os
 from pymongo import MongoClient
 from dotenv import load_dotenv
-from langchain_community.chat_models import ChatOpenAI
+from langchain_openai import ChatOpenAI
 import logging
 
 load_dotenv()
@@ -21,6 +21,7 @@ chat_model = ChatOpenAI(
 client = MongoClient(mongo_uri)
 db = client["chat_db"]
 chat_collection = db["chat_logs"]
+summary_collection = db["chat_summaries"]
 
 # 로깅
 logging.basicConfig(level=logging.INFO)

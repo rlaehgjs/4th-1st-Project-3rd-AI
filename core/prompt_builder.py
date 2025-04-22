@@ -1,4 +1,4 @@
-def build_prompt(mbti, chat_history_text, input_text):
+def build_prompt(mbti, summary_text, recent_chat_text, input_text):
     mbti_styles = {
         "INFP": "따뜻하고 감성적인 말투로, 부드럽고 다정하게",
         "INFJ": "조용하지만 사려 깊은 말투로, 신중하고 배려 깊게",
@@ -20,7 +20,8 @@ def build_prompt(mbti, chat_history_text, input_text):
     style = mbti_styles.get(mbti.upper(), "친근하고 자연스럽게")
 
     system_instruction = f"""너는 {mbti} 성격을 가진 AI 챗봇이야. {style} 말해줘.
-사용자는 주로 10대~20대인 점을 고려하고 친구와 채팅하듯이 3문장 이내로 간단하고 대답해줘."""
+사용자는 주로 10대~20대이며 친구와 채팅하듯 대화하고 싶어 해.
+응답은 3문장 이내로 간단하게, 명확하게 말해줘."""
 
     example_dialogue = """예시:
 User: 기분이 이상해.
@@ -33,8 +34,12 @@ AI: 든든한 국밥 어떰?"""
 
 {example_dialogue}
 
-지금까지의 대화:
-{chat_history_text.strip()}
+--- 요약된 이전 대화 요약 ---
+{summary_text.strip()}
 
+--- 최근 사용자와의 대화 원문 ---
+{recent_chat_text.strip()}
+
+--- 새로운 사용자 입력 ---
 User: {input_text}
 AI:"""
