@@ -42,15 +42,20 @@ async def process_chat(chat_request):
 
     # 5. 대화 로그 저장
     try:
+        object_id = f"{user_id}_{chat_request.mbti}"
         chat_collection.insert_many([
             {
                 "user_id": user_id,
+                "mbti": chat_request.mbti,
+                "object_id": object_id,
                 "role": "user",
                 "text": chat_request.input_text,
                 "timestamp": now
             },
             {
                 "user_id": user_id,
+                "mbti": chat_request.mbti,
+                "object_id": object_id,
                 "role": "bot",
                 "text": response_text,
                 "timestamp": now
@@ -88,9 +93,12 @@ async def process_chat(chat_request):
             updated_summary = summary_response.content.strip()
             logger.debug(f"[요약 결과] {updated_summary}")
 
+            summary_id = f"{user_id}_{chat_request.mbti}"
             summary_collection.update_one(
-                {"user_id": user_id},
+                {"_id": summary_id},
                 {"$set": {
+                    "user_id": user_id,
+                    "mbti": chat_request.mbti,
                     "summary": updated_summary,
                     "updated_at": now
                 }},
