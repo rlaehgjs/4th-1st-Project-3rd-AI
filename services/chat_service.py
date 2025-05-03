@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 from core.config import chat_model, chat_collection, summary_collection, logger
 from core.prompt_builder import build_prompt
 
@@ -39,6 +39,8 @@ async def process_chat(chat_request):
         logger.error(f"[GPT 응답 오류] {e}")
 
     now = datetime.utcnow()
+    user_ts = now
+    bot_ts = now + timedelta(microseconds=10)
 
     # 5. 대화 로그 저장
     try:
@@ -50,7 +52,7 @@ async def process_chat(chat_request):
                 "object_id": object_id,
                 "role": "user",
                 "text": chat_request.input_text,
-                "timestamp": now
+                "timestamp": user_ts
             },
             {
                 "user_id": user_id,
@@ -58,7 +60,7 @@ async def process_chat(chat_request):
                 "object_id": object_id,
                 "role": "bot",
                 "text": response_text,
-                "timestamp": now
+                "timestamp": bot_ts
             }
         ])
     except Exception as db_e:
