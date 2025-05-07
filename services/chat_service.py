@@ -41,11 +41,8 @@ async def process_chat(chat_request):
 
     now = datetime.utcnow()
 
-    # 5. 대화 저장 + 요약 각각 비동기로 실행
-    asyncio.create_task(save_chat(
-        user_id, chat_request.mbti, chat_request.input_text, response_text, now
-    ))
-    asyncio.create_task(update_summary(user_id, chat_request.mbti, now))
+    # 5. 백그라운드 작업 실행 (대화 저장 + 요약)
+    run_background_tasks(user_id, chat_request.mbti, chat_request.input_text, response_text, now)
 
     # 6. 사용자에게 응답 반환
     return {
@@ -55,6 +52,11 @@ async def process_chat(chat_request):
         "response": response_text,
         "response_timestamp": now.isoformat() + "Z"
     }
+
+
+def run_background_tasks(user_id, mbti, input_text, response_text, timestamp):
+    asyncio.create_task(save_chat(user_id, mbti, input_text, response_text, timestamp))
+    asyncio.create_task(update_summary(user_id, mbti, timestamp))
 
 
 async def save_chat(user_id, mbti, input_text, response_text, timestamp):
