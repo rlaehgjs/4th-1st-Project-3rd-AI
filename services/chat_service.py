@@ -63,7 +63,7 @@ async def save_chat(user_id, mbti, input_text, response_text, timestamp):
     try:
         object_id = f"{user_id}_{mbti}"
         user_ts = timestamp
-        bot_ts = timestamp + timedelta(microseconds=10)
+        bot_ts = timestamp + timedelta(milliseconds=10)
 
         chat_collection.insert_many([
             {
