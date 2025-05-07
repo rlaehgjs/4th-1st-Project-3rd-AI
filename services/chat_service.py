@@ -55,7 +55,7 @@ async def process_chat(chat_request):
 
 
 def run_background_tasks(user_id, mbti, input_text, response_text, timestamp):
-    asyncio.create_task(save_chat(user_id, mbti, input_text, response_text, timestamp))
+    # asyncio.create_task(save_chat(user_id, mbti, input_text, response_text, timestamp))
     asyncio.create_task(update_summary(user_id, mbti, timestamp))
 
 
