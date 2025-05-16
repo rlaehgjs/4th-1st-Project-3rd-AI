@@ -3,19 +3,21 @@ import asyncio
 from core.config import chat_model, chat_collection, summary_collection, logger
 from core.prompt_builder import build_prompt
 
+MAX_RECENT_LOGS = 50
+SUMMARY_BUFFER_COUNT = 100
 
 async def process_chat(chat_request):
-    user_id = chat_request.user_id
+    user_id = str(chat_request.user_id)
 
     # 1. 요약 불러오기
     summary_doc = summary_collection.find_one({"user_id": user_id})
     summary_text = summary_doc["summary"] if summary_doc else ""
 
-    # 2. 최근 대화 10개 가져오기
+    # 2. 최근 대화 50개 가져오기
     recent_logs = list(
         chat_collection.find({"user_id": user_id})
         .sort("timestamp", -1)
-        .limit(10)
+        .limit(MAX_RECENT_LOGS)
     )[::-1]
 
     # 3. 최근 대화 텍스트 구성
@@ -92,10 +94,10 @@ async def update_summary(user_id, mbti, now):
         updated_logs = list(
             chat_collection.find({"user_id": user_id})
             .sort("timestamp", 1)
-            .limit(30)
+            .limit(MAX_RECENT_LOGS + SUMMARY_BUFFER_COUNT)
         )
 
-        logs_to_summarize = updated_logs[:-10] if len(updated_logs) > 10 else []
+        logs_to_summarize = updated_logs[:-MAX_RECENT_LOGS] if len(updated_logs) > MAX_RECENT_LOGS else []
         if not logs_to_summarize:
             return
 
